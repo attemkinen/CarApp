@@ -5,6 +5,8 @@ import { AgGridReact } from "ag-grid-react";
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Addcar from "./addcar";
+import Editcar from "./editcar";
+import EditIcon from '@mui/icons-material/Edit';
 
 
 
@@ -48,19 +50,21 @@ function Carlist () {
       .catch(err => console.error(err))
       
     }
-    
-    
-    
-    
-    
-    const SimpleComp = (params) =>
-     <Button
-      color="error"
-      size="small"
-      variant="contained"
-      startIcon={<DeleteIcon />}
-      onClick={()=> deleteCar(params.value)}>Delete </Button>
-    
+
+    const updateCar = (car, link) => {
+      fetch(link, {
+        method: "PUT",
+        headers: {
+          "Content-Type" : "application/json"
+        },
+        body: JSON.stringify(car)
+      })
+      .then(res => fetchData())
+      .catch(err => console.error(err))
+
+        
+
+    }
     
     const [columnDefs] = useState([
         {field: "brand", sortable: true, filter: true, flex: 1},
@@ -68,7 +72,8 @@ function Carlist () {
         {field: "fuel", sortable: true, filter: true, flex:1},
         {field: "year", sortable: true, filter: true,flex:1},
         {field: "price", sortable: true, filter: true,flex:1},
-        {field: "_links.self.href", sortable: false, filter: false, cellRenderer: SimpleComp, display: "flex"},
+        {cellRenderer: row => <Editcar startIcon={<EditIcon/>} updateCar={updateCar} car={row.data} />},
+        {field: "_links.self.href", cellRenderer: ({value}) => <Button size="small" color="error" startIcon={<DeleteIcon />} onClick={()=> deleteCar(value)}>Delete</Button>},
 
         
     ])
